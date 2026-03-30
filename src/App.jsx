@@ -1,0 +1,543 @@
+import React, { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ArrowRight, Activity, Calendar as CalendarIcon, FileText, MousePointer2 } from 'lucide-react';
+
+gsap.registerPlugin(ScrollTrigger);
+
+// =========================================================================
+// BACKEND CONFIGURATION
+// Once you deploy the Google Apps Script, paste the Web App URL below:
+// =========================================================================
+const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbws0RdIXPkt18QVJ-Ns_tWSsmhjOdDQq7pViXIMAx_r2AVWmZOIqr1IUtiw0l0Hx9Kfow/exec"; 
+
+// --- INTERACTIVE SENSOR GRID ---
+const InteractiveSensorGrid = () => {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let dots = [];
+    let targetMouse = { x: -1000, y: -1000 };
+    let currentMouse = { x: -1000, y: -1000 };
+    const spacing = 40; 
+    const interactionRadius = 180; 
+
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initDots(); };
+    const initDots = () => {
+      dots = [];
+      for (let x = 0; x < canvas.width; x += spacing) {
+        for (let y = 0; y < canvas.height; y += spacing) { dots.push({ x, y }); }
+      }
+    };
+    const handleMouseMove = (e) => { targetMouse = { x: e.clientX, y: e.clientY }; };
+    const handleMouseLeave = () => { targetMouse = { x: -1000, y: -1000 }; };
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    resize();
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      currentMouse.x += (targetMouse.x - currentMouse.x) * 0.08;
+      currentMouse.y += (targetMouse.y - currentMouse.y) * 0.08;
+      ctx.fillStyle = '#0EA5E9';
+
+      dots.forEach(dot => {
+        const dx = currentMouse.x - dot.x;
+        const dy = currentMouse.y - dot.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < interactionRadius) {
+          const alpha = Math.pow(1 - (distance / interactionRadius), 1.5);
+          ctx.globalAlpha = alpha * 0.6; 
+          ctx.beginPath();
+          ctx.arc(dot.x, dot.y, 1 + (alpha * 1.5), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      animationFrameId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
+};
+
+// --- SCHEDULING PAGE COMPONENT ---
+const SchedulingPage = ({ onBack, userData, scriptUrl }) => {
+  const [selectedDate, setSelectedDate] = useState(14);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isScheduling, setIsScheduling] = useState(false);
+  
+  const dates = Array.from({length: 30}, (_, i) => i + 1);
+  const times = ['09:00 AM', '09:30 AM', '10:00 AM', '11:00 AM', '01:00 PM', '01:30 PM', '02:00 PM', '03:00 PM', '04:00 PM'];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleConfirm = async () => {
+    setIsScheduling(true);
+    if (scriptUrl) {
+      try {
+        await fetch(scriptUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ 
+            type: 'SCHEDULE_CALL', 
+            name: userData.name, 
+            email: userData.email, 
+            phone: userData.phone,
+            dateString: `Nov ${selectedDate}, 2026 ${selectedTime}`
+          })
+        });
+      } catch(e) { console.error('Scheduler fetch error:', e); }
+    }
+    setIsConfirmed(true);
+    setIsScheduling(false);
+  };
+
+  if (isConfirmed) {
+    return (
+      <div className="min-h-screen bg-slate-50/50 backdrop-blur-3xl py-20 px-4 flex items-center justify-center relative">
+        <div className="max-w-2xl w-full bg-white rounded-[3rem] border border-slate-100 shadow-2xl p-12 md:p-16 text-center animate-in fade-in zoom-in duration-500">
+            <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-100 shadow-sm">
+                <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 className="text-4xl font-heading font-extrabold text-slate-900 mb-4 tracking-tight">Call Scheduled.</h2>
+            <p className="text-slate-500 text-lg mb-10 leading-relaxed">We have secured November {selectedDate} at {selectedTime} for your onboarding dialogue. A calendar invite has been dispatched.</p>
+            <button onClick={onBack} className="bg-slate-900 text-white px-8 py-3.5 rounded-full font-medium tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/10">
+                Return to Network
+            </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50/50 backdrop-blur-3xl py-12 px-4 md:py-20 flex items-center justify-center relative selection:bg-sky-100 selection:text-sky-900 animate-in fade-in duration-500">
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-5xl w-full bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden relative z-10 flex flex-col md:flex-row min-h-[650px]">
+        {/* Left Side: Calendar */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 lg:p-14 bg-slate-50/50 border-r border-slate-100 flex flex-col">
+          <button onClick={onBack} className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-900 font-data text-xs tracking-widest uppercase font-bold transition-colors mb-12 w-fit">
+            <ArrowRight className="w-4 h-4 rotate-180" /> Return
+          </button>
+          <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-slate-900 mb-4 tracking-tight">Select a Date</h2>
+          <p className="text-slate-500 mb-10 text-lg">Choose a day that works best for your clinical schedule.</p>
+          
+          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm mt-auto">
+            <div className="flex justify-between items-center mb-6 px-2">
+              <span className="font-heading font-bold text-lg text-slate-900">November 2026</span>
+              <div className="flex gap-2">
+                <button className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors"><ArrowRight className="w-4 h-4 rotate-180"/></button>
+                <button className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 transition-colors"><ArrowRight className="w-4 h-4" /></button>
+              </div>
+            </div>
+            <div className="grid grid-cols-7 gap-2 mb-2 text-center">
+              {['Su','Mo','Tu','We','Th','Fr','Sa'].map(day => (
+                <div key={day} className="font-data text-[10px] font-bold text-slate-400 uppercase">{day}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-y-2 gap-x-2">
+              {Array.from({length: 3}).map((_, i) => <div key={`empty-${i}`}></div>)}
+              {dates.map(date => {
+                const isSelected = selectedDate === date;
+                const isPast = date < 12;
+                return (
+                  <button 
+                    key={date}
+                    disabled={isPast}
+                    onClick={() => { setSelectedDate(date); setSelectedTime(null); }}
+                    className={`h-10 w-full rounded-xl flex items-center justify-center font-medium text-sm transition-all duration-300 ${
+                      isSelected 
+                        ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30 scale-105' 
+                        : isPast 
+                          ? 'text-slate-200 cursor-not-allowed'
+                          : 'text-slate-700 hover:bg-sky-50 hover:text-sky-600'
+                    }`}
+                  >
+                    {date}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Time Slots */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 lg:p-14 flex flex-col justify-center bg-white relative">
+           {selectedDate ? (
+             <div className="h-full flex flex-col animate-in fade-in duration-500">
+                <h3 className="text-2xl font-heading font-bold text-slate-900 mb-1">Available Times</h3>
+                <p className="text-sky-500 mb-8 font-data text-xs uppercase tracking-widest font-bold">Nov {selectedDate}, 2026</p>
+                
+                <div className="grid grid-cols-2 gap-4 flex-1 overflow-y-auto pr-2 pb-4">
+                  {times.map(time => {
+                    const isSelected = selectedTime === time;
+                    return (
+                      <button 
+                        key={time}
+                        onClick={() => setSelectedTime(time)}
+                        className={`py-4 rounded-2xl font-data text-sm tracking-wide transition-all border duration-300 ${
+                          isSelected 
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xl scale-[1.02]' 
+                            : 'bg-white border-slate-200 text-slate-600 hover:border-sky-500 hover:text-sky-500 hover:shadow-md hover:-translate-y-0.5'
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {selectedTime && (
+                  <div className="mt-8 pt-8 border-t border-slate-100 animate-in slide-in-from-bottom-4 duration-500">
+                    <button onClick={handleConfirm} disabled={isScheduling} className="w-full bg-sky-500 text-white font-bold tracking-wide rounded-2xl py-4 transition-all hover:bg-sky-400 hover:scale-[1.02] shadow-lg shadow-sky-500/20 disabled:opacity-50 disabled:hover:scale-100 flex justify-center">
+                      {isScheduling ? <span className="animate-pulse">Securing Time...</span> : 'Confirm Appointment'}
+                    </button>
+                  </div>
+                )}
+             </div>
+           ) : (
+             <div className="flex flex-col items-center justify-center text-center h-full text-slate-300">
+                <CalendarIcon size={48} className="mb-4 opacity-50" />
+                <p className="font-heading text-xl">Select a date to view available times</p>
+             </div>
+           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- MAIN APPLICATION COMPONENT ---
+export default function QuantumCareApp() {
+  const appRef = useRef(null);
+  
+  // State for Navigation / Modals
+  const [showScheduler, setShowScheduler] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+  
+  // State for Form Fields
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  
+  // State for Form Submission
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (showScheduler) return; // Disable main page scroll tracking if we're on the scheduler
+
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.fromTo('.hero-text', 
+        { y: 40, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: 'power3.out', delay: 0.2 }
+      );
+      gsap.fromTo('.philosophy-line',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: 'power2.out', scrollTrigger: { trigger: '.philosophy-section', start: 'top 75%' } }
+      );
+      const cards = gsap.utils.toArray('.protocol-card');
+      cards.forEach((card, i) => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top top+=100',
+          endTrigger: '.protocol-section',
+          end: 'bottom bottom',
+          pin: true,
+          pinSpacing: false,
+        });
+        if (i < cards.length - 1) {
+          gsap.to(card, {
+            scale: 0.94, opacity: 0.2, filter: 'blur(12px)',
+            scrollTrigger: { trigger: cards[i + 1], start: 'top 65%', end: 'top top+=100', scrub: true }
+          });
+        }
+      });
+    }, appRef);
+
+    return () => ctx.revert();
+  }, [showScheduler]);
+
+  const handleJoinSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    if (GOOGLE_WEB_APP_URL) {
+      try {
+        await fetch(GOOGLE_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ type: 'JOIN_NETWORK', name, email, phone })
+        });
+      } catch(e) { console.error('Form fetch error:', e); }
+    }
+    
+    setIsSubmitting(false);
+    setIsFormSubmitted(true);
+  };
+
+  if (showScheduler) {
+    return <SchedulingPage onBack={() => setShowScheduler(false)} userData={{name, email, phone}} scriptUrl={GOOGLE_WEB_APP_URL} />;
+  }
+
+  return (
+    <div ref={appRef} className="relative w-full bg-white text-slate-900 selection:bg-sky-100 selection:text-sky-900 animate-in fade-in duration-500">
+      <InteractiveSensorGrid />
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl flex justify-between items-center px-8 py-4 bg-white/80 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 shadow-sm z-50">
+        <div className="text-xl font-heading font-bold tracking-tight text-slate-900">QUANTUM CARE COLLECTIVE</div>
+        <div className="hidden md:flex gap-8 font-data text-xs tracking-widest text-slate-500 font-bold uppercase">
+          <a href="#features" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">System</a>
+          <a href="#protocol" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Protocol</a>
+          <a href="#network" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Network</a>
+        </div>
+        <a href="#network" className="btn-magnetic bg-sky-500 text-white px-6 py-2.5 rounded-full font-medium text-sm tracking-wide">Initialize</a>
+      </nav>
+
+      <section className="relative h-[100dvh] flex items-end pb-32 px-8 md:px-16 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000&auto=format&fit=crop" alt="Sterile White Architecture" className="w-full h-full object-cover opacity-30 mix-blend-multiply pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-5xl pointer-events-none">
+          <p className="hero-text font-data text-sky-500 font-bold tracking-widest uppercase text-xs mb-8 bg-sky-50 inline-block px-4 py-2 rounded-full border border-sky-100 pointer-events-auto">
+            Quantum Care Collective — Your Personal Assistant to All Things Locums
+          </p>
+          <h1 className="hero-text text-6xl md:text-[7.5rem] font-heading font-extrabold tracking-tighter leading-[0.85] text-slate-900">
+            Autonomy meets <br />
+            <span className="font-drama italic text-6xl md:text-[8.5rem] font-light text-slate-400">Medicine.</span>
+          </h1>
+          <a href="#network" className="hero-text mt-12 inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-full font-medium btn-magnetic group shadow-xl shadow-slate-900/10 pointer-events-auto">
+            Join the Network <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </div>
+      </section>
+
+      <section id="features" className="py-32 px-8 md:px-16 max-w-7xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white/80 backdrop-blur-md border border-slate-100 rounded-[2.5rem] p-10 h-[420px] flex flex-col justify-between relative overflow-hidden group shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-shadow duration-500">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center mb-6"><Activity className="text-sky-500 w-6 h-6" /></div>
+              <h3 className="text-2xl font-heading font-bold mb-3 text-slate-900">Connect with Gigs</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">High-yield opportunities synced instantly.</p>
+            </div>
+            <div className="relative h-36 flex flex-col gap-2 justify-end">
+               <div className="bg-white p-3.5 rounded-2xl text-xs font-data border border-slate-100 shadow-sm opacity-50 transform translate-y-2 text-slate-400">Search Nationwide</div>
+               <div className="bg-white p-3.5 rounded-2xl text-xs font-data border border-slate-100 shadow-md opacity-80 transform translate-y-1 text-slate-500">Compare Rates & Terms</div>
+               <div className="bg-sky-500 text-white p-4 rounded-2xl text-xs font-data font-bold shadow-lg shadow-sky-500/20 flex justify-between items-center relative z-10">
+                 <span>Instant Match</span>
+                 <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+               </div>
+            </div>
+          </div>
+          <div className="bg-white/80 backdrop-blur-md border border-slate-100 rounded-[2.5rem] p-10 h-[420px] flex flex-col relative overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-shadow duration-500">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center mb-6"><FileText className="text-sky-500 w-6 h-6" /></div>
+              <h3 className="text-2xl font-heading font-bold mb-3 text-slate-900">We handle the back-end</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">You practice. We process the paperwork.</p>
+            </div>
+            <div className="mt-8 bg-slate-50/80 border border-slate-100 rounded-2xl p-5 flex-1 overflow-hidden relative shadow-inner">
+              <div className="absolute top-3 right-4 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]"></span>
+                <span className="font-data text-[9px] font-bold text-slate-400 tracking-wider">LIVE FEED</span>
+              </div>
+              <div className="font-data text-xs text-slate-400 mt-4 space-y-3">
+                <p className="text-slate-600">{'>'} Parsing state licensing...</p>
+                <p>{'>'} Done.</p>
+                <p className="text-slate-600">{'>'} Matching Emergency Medicine...</p>
+                <p className="text-sky-500 font-bold">{'>'} Fort Wayne, IN: Secured.</p>
+                <p>{'>'} Generating credentialing<span className="animate-pulse">_</span></p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/80 backdrop-blur-md border border-slate-100 rounded-[2.5rem] p-10 h-[420px] flex flex-col justify-between relative overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-shadow duration-500">
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center mb-6"><CalendarIcon className="text-sky-500 w-6 h-6" /></div>
+              <h3 className="text-2xl font-heading font-bold mb-3 text-slate-900">Focus on the medicine</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">Total control over your clinical trajectory.</p>
+            </div>
+            <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-5 mt-8 relative shadow-inner">
+              <div className="grid grid-cols-7 gap-1 text-center font-data font-bold text-[9px] text-slate-400 mb-3">
+                <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+              </div>
+              <div className="grid grid-cols-7 gap-1.5">
+                {[...Array(14)].map((_, i) => (
+                  <div key={Math.random()} className={`h-6 rounded-md transition-colors ${i === 10 || i === 11 ? 'bg-sky-100 border border-sky-200 shadow-sm' : 'bg-white border border-slate-100'}`}></div>
+                ))}
+              </div>
+              <MousePointer2 className="absolute top-1/2 left-1/2 text-slate-800 w-5 h-5 drop-shadow-xl -translate-x-2 translate-y-3 opacity-90" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="philosophy-section relative py-48 px-8 md:px-16 overflow-hidden bg-white/40 backdrop-blur-sm">
+        <div className="relative z-10 max-w-5xl mx-auto text-center">
+          <p className="philosophy-line text-lg md:text-xl text-slate-500 font-medium mb-8">
+            Most agencies focus on bureaucratic friction and generic placements.
+          </p>
+          <h2 className="philosophy-line text-5xl md:text-7xl font-heading font-extrabold tracking-tight text-slate-900">
+            We focus on pure <br /><span className="font-drama italic font-light text-sky-500">clinical autonomy.</span>
+          </h2>
+        </div>
+      </section>
+
+      <section id="protocol" className="protocol-section py-32 px-8 md:px-16 max-w-5xl mx-auto relative z-10 bg-transparent">
+        <h2 className="text-center font-data font-bold tracking-[0.2em] text-slate-400 text-sm uppercase mb-24 flex items-center justify-center gap-4">
+          <span className="w-12 h-px bg-slate-200"></span>The System Protocol<span className="w-12 h-px bg-slate-200"></span>
+        </h2>
+        <div className="space-y-24">
+          <div className="protocol-card bg-white/95 backdrop-blur-xl border border-slate-100 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgb(0,0,0,0.06)] relative">
+            <div className="font-data text-8xl text-slate-50 font-bold absolute top-12 left-12 -z-10 select-none">01</div>
+            <div className="max-w-xl ml-auto relative z-10"><h3 className="text-4xl font-heading font-bold mb-6 text-slate-900">Comprehensive Profiling</h3>
+            <p className="text-slate-500 text-lg leading-relaxed">Provide your credentials, certifications, desired pay range, and clinical preferences. We use this comprehensive data to build a highly tailored professional profile that acts as your key to the right opportunities.</p></div>
+          </div>
+          <div className="protocol-card bg-slate-50/95 backdrop-blur-xl border border-slate-100 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgb(0,0,0,0.06)] relative">
+            <div className="font-data text-8xl text-white font-bold absolute top-12 left-12 -z-10 select-none drop-shadow-sm">02</div>
+            <div className="max-w-xl ml-auto relative z-10"><h3 className="text-4xl font-heading font-bold mb-6 text-sky-500">Tailored Matchmaking</h3>
+            <p className="text-slate-500 text-lg leading-relaxed">Forget automated algorithms. We personally review your profile and specific desires to hand-select locums gigs that genuinely align with your career goals, bypassing the noise to find your perfect fit.</p></div>
+          </div>
+          <div className="protocol-card bg-white/95 backdrop-blur-xl border border-sky-100 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgba(14,165,233,0.08)] relative">
+            <div className="font-data text-8xl text-sky-50 font-bold absolute top-12 left-12 -z-10 select-none">03</div>
+            <div className="max-w-xl ml-auto relative z-10">
+              <h3 className="text-4xl font-heading font-bold mb-6 text-slate-900">Deploy & Practice</h3>
+              <p className="text-slate-500 text-lg leading-relaxed">Step seamlessly into the clinical space. We manage the licensing, travel logistics, and payroll silently in the background.</p>
+            </div>
+          </div>
+          <div className="protocol-card bg-slate-50/95 backdrop-blur-xl border border-sky-200/50 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgba(14,165,233,0.06)] relative overflow-hidden">
+            <div className="font-data text-8xl text-white font-bold absolute top-12 left-12 -z-10 select-none drop-shadow-sm">04</div>
+            <div className="max-w-xl ml-auto relative z-10">
+              <h3 className="text-4xl font-heading font-bold mb-6 text-sky-500">Enjoy Referral Bonus</h3>
+              <p className="text-slate-500 text-lg leading-relaxed">
+                Your network is your equity. As you introduce esteemed colleagues to our collective, you cultivate a passive revenue stream that scales as your network grows. We reward your endorsement by paying you a continuous dividend for the clinical time your colleagues provide.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="network" className="py-32 px-8 md:px-16 border-t border-slate-100 bg-white/60 backdrop-blur-lg relative z-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
+          <div className="bg-white p-12 md:p-16 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/40 min-h-[500px] flex flex-col justify-center">
+            {isFormSubmitted ? (
+               <div className="text-center py-6 animate-in fade-in zoom-in duration-500">
+                  <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-100 shadow-sm">
+                    <svg className="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                  </div>
+                  <h3 className="text-4xl font-heading font-extrabold mb-4 text-slate-900 tracking-tight">Thank you.</h3>
+                  <p className="text-slate-500 text-lg mb-12">You'll hear back from us soon!</p>
+                  <button onClick={() => setShowScheduler(true)} className="inline-flex items-center gap-3 text-sky-500 font-bold hover:text-sky-600 transition-colors border-b-2 border-transparent hover:border-sky-500 pb-1 text-lg group">
+                    Would you like to schedule a call? <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+               </div>
+            ) : (
+                <>
+                    <h2 className="text-4xl font-heading font-bold mb-3 text-slate-900">Join the Network</h2>
+                    <p className="text-slate-500 mb-10 text-lg">We'd love to connect with you. Leave your details below, and we'll be in touch.</p>
+                    <form onSubmit={handleJoinSubmit} className="space-y-6">
+                    <div className="space-y-3">
+                        <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Details</label>
+                        <input type="text" value={name} onChange={e=>setName(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium" placeholder="Full Name" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                        <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email Address</label>
+                        <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium" placeholder="secure@domain.com" />
+                        </div>
+                        <div className="space-y-3">
+                        <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone Number</label>
+                        <input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium" placeholder="(555) 000-0000" />
+                        </div>
+                    </div>
+                    <button type="submit" disabled={isSubmitting} className="w-full bg-sky-500 text-white font-bold tracking-wide rounded-2xl py-4 mt-8 btn-magnetic shadow-lg shadow-sky-500/20 text-lg disabled:opacity-50 disabled:hover:scale-100 flex justify-center">
+                        {isSubmitting ? <span className="animate-pulse">Submitting...</span> : 'Submit'}
+                    </button>
+                    </form>
+                </>
+            )}
+           </div>
+          <div className="flex flex-col justify-center">
+            <h2 className="text-5xl md:text-6xl font-heading font-extrabold tracking-tight mb-6 text-slate-900">Accelerate your <br /><span className="font-drama italic text-sky-500 font-light">placement volume.</span></h2>
+            <p className="text-xl text-slate-500 mb-10 leading-relaxed">
+              Are you a locums agency looking to fill critical roles? We act as a high-yield clinical funnel. Partner with Quantum Care Collective to instantly access a vetted network of premier physicians ready to staff your open positions.
+            </p>
+            <div className="space-y-5">
+              <div className="flex items-center gap-6 border border-slate-100 p-5 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 shrink-0"><Activity size={24} /></div>
+                <div>
+                  <h4 className="font-heading font-bold text-lg text-slate-900">Rapid Deployment</h4>
+                  <p className="text-sm text-slate-500 mt-1">Accelerate your placement lifecycle with our active physician roster.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6 border border-slate-100 p-5 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 shrink-0"><FileText size={24} /></div>
+                <div>
+                  <h4 className="font-heading font-bold text-lg text-slate-900">Pre-Vetted Talent</h4>
+                  <p className="text-sm text-slate-500 mt-1">Access credentialed professionals ready to fulfill your contracts.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-white pt-24 pb-12 px-8 md:px-16 border-t border-slate-200 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-100">
+          <p className="text-slate-400 text-sm font-medium">© {new Date().getFullYear()} Quantum Care Collective Inc.</p>
+          <button onClick={() => setShowAbout(true)} className="flex items-center gap-3 mt-4 md:mt-0 bg-slate-50 px-6 py-2.5 rounded-full border border-slate-200 hover:bg-slate-100 hover:border-slate-300 hover:shadow-sm transition-all group cursor-pointer hover:-translate-y-px">
+            <span className="font-data font-bold text-[10.5px] text-slate-500 group-hover:text-sky-600 tracking-widest uppercase transition-colors">About Us</span>
+          </button>
+        </div>
+      </footer>
+
+      {showAbout && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowAbout(false)}></div>
+          <div className="relative w-full max-w-4xl bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden animate-in fade-in zoom-in">
+            <div className="p-10 md:p-14">
+              <button onClick={() => setShowAbout(false)} className="absolute top-8 right-8 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all text-xl font-bold">✕</button>
+              
+              <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-slate-900 mb-8 border-b border-slate-100 pb-8">About Us</h2>
+              
+              <p className="text-xl text-slate-500 leading-relaxed mb-12">
+                Quantum Care Collective was founded on a singular vision: to strip away the bureaucratic friction that hampers modern medicine. We built this company in the hopes to make it a seamless experience for doctors to enjoy practicing medicine without being burdened by the relentless paperwork and administrative overhead that plagues healthcare today.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-sky-200 hover:shadow-md transition-all group">
+                  <h4 className="font-data text-xs text-sky-500 font-bold uppercase tracking-widest mb-2">Chief Operating Officer</h4>
+                  <h3 className="text-2xl font-heading font-bold text-slate-900 mb-4">Daria Vasichkina</h3>
+                  <a href="mailto:daria@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-sm block">daria@quantumcarecollective.org</a>
+                </div>
+                <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-sky-200 hover:shadow-md transition-all group">
+                  <h4 className="font-data text-xs text-sky-500 font-bold uppercase tracking-widest mb-2">Chief Executive Officer</h4>
+                  <h3 className="text-2xl font-heading font-bold text-slate-900 mb-4">Ludwig Koeneke</h3>
+                  <a href="mailto:ludwig@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-sm block">ludwig@quantumcarecollective.org</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
