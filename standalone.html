@@ -329,6 +329,22 @@ function QuantumCareApp() {
     return () => ctx.revert();
   }, [showScheduler]);
 
+  const handlePhoneChange = (e) => {
+    let input = e.target.value.replace(/\D/g, '');
+    if (input.length > 10) input = input.substring(0, 10);
+    
+    let formatted = input;
+    if (input.length > 6) {
+      formatted = `(${input.slice(0, 3)}) ${input.slice(3, 6)}-${input.slice(6)}`;
+    } else if (input.length > 3) {
+      formatted = `(${input.slice(0, 3)}) ${input.slice(3)}`;
+    } else if (input.length > 0) {
+      formatted = `(${input}`;
+    }
+    
+    setPhone(formatted);
+  };
+
   const handleJoinSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -361,7 +377,7 @@ function QuantumCareApp() {
           <a href="#protocol" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Protocol</a>
           <a href="#network" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Network</a>
         </div>
-        <a href="#network" className="btn-magnetic bg-sky-500 text-white px-6 py-2.5 rounded-full font-medium text-sm tracking-wide">Initialize</a>
+        <a href="#network" className="btn-magnetic bg-sky-500 text-white px-6 py-2.5 rounded-full font-medium text-sm tracking-wide">Join Now</a>
       </nav>
 
       <section className="relative h-[100dvh] flex items-end pb-32 px-8 md:px-16 overflow-hidden">
@@ -517,7 +533,7 @@ function QuantumCareApp() {
                         </div>
                         <div className="space-y-3">
                         <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone Number</label>
-                        <input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium" placeholder="(555) 000-0000" />
+                        <input type="tel" value={phone} onChange={handlePhoneChange} required className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium" placeholder="(555) 000-0000" />
                         </div>
                     </div>
                     <button type="submit" disabled={isSubmitting} className="w-full bg-sky-500 text-white font-bold tracking-wide rounded-2xl py-4 mt-8 btn-magnetic shadow-lg shadow-sky-500/20 text-lg disabled:opacity-50 disabled:hover:scale-100 flex justify-center">
