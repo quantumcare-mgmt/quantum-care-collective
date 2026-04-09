@@ -318,29 +318,29 @@ export default function QuantumCareApp() {
   return (
     <div ref={appRef} className="relative w-full bg-white text-slate-900 selection:bg-sky-100 selection:text-sky-900 animate-in fade-in duration-500">
       <InteractiveSensorGrid />
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl flex justify-between items-center px-8 py-4 bg-white/80 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 shadow-sm z-50">
+      <nav className="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[95%] md:w-[90%] max-w-6xl flex justify-between items-center px-5 md:px-8 py-3 md:py-4 bg-white/80 backdrop-blur-xl rounded-[1.5rem] md:rounded-[2rem] border border-slate-200/50 shadow-sm z-50">
         <div className="text-xl font-heading font-bold tracking-tight text-slate-900">QUANTUM CARE COLLECTIVE</div>
         <div className="hidden md:flex gap-8 font-data text-xs tracking-widest text-slate-500 font-bold uppercase">
           <a href="#features" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">System</a>
           <a href="#protocol" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Protocol</a>
           <a href="#network" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Network</a>
         </div>
-        <a href="#network" className="btn-magnetic bg-sky-500 text-white px-6 py-2.5 rounded-full font-medium text-sm tracking-wide">Join Now</a>
+        <a href="#network" className="btn-magnetic bg-sky-500 text-white px-5 md:px-6 py-2 md:py-2.5 rounded-full font-medium text-xs md:text-sm tracking-wide">Join Now</a>
       </nav>
 
-      <section className="relative h-[100dvh] flex items-end pb-32 px-8 md:px-16 overflow-hidden">
+      <section className="relative h-[100dvh] flex items-end pb-24 md:pb-32 px-6 md:px-16 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000&auto=format&fit=crop" alt="Sterile White Architecture" className="w-full h-full object-cover opacity-30 mix-blend-multiply pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
         </div>
         
         <div className="relative z-10 max-w-5xl pointer-events-none">
-          <p className="hero-text font-data text-sky-500 font-bold tracking-widest uppercase text-xs mb-8 bg-sky-50 inline-block px-4 py-2 rounded-full border border-sky-100 pointer-events-auto">
+          <p className="hero-text font-data text-sky-500 font-bold tracking-widest uppercase text-[10px] md:text-xs mb-6 md:mb-8 bg-sky-50 inline-block px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-sky-100 pointer-events-auto leading-relaxed md:leading-normal">
             Quantum Care Collective — Your Personal Assistant to All Things Locums
           </p>
-          <h1 className="hero-text text-6xl md:text-[7.5rem] font-heading font-extrabold tracking-tighter leading-[0.85] text-slate-900">
+          <h1 className="hero-text text-5xl sm:text-6xl md:text-[7.5rem] font-heading font-extrabold tracking-tighter leading-[0.9] md:leading-[0.85] text-slate-900">
             Autonomy meets <br />
-            <span className="font-drama italic text-6xl md:text-[8.5rem] font-light text-slate-400">Medicine.</span>
+            <span className="font-drama italic text-5xl sm:text-6xl md:text-[8.5rem] font-light text-slate-400">Medicine.</span>
           </h1>
           <a href="#network" className="hero-text mt-12 inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-full font-medium btn-magnetic group shadow-xl shadow-slate-900/10 pointer-events-auto">
             Join the Network <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -437,33 +437,33 @@ export default function QuantumCareApp() {
          </div>
       </section>
 
-      <section id="protocol" className="protocol-section py-32 px-8 md:px-16 max-w-5xl mx-auto relative z-10 bg-transparent">
-        <h2 className="text-center font-data font-bold tracking-[0.2em] text-slate-400 text-sm uppercase mb-24 flex items-center justify-center gap-4">
-          <span className="w-12 h-px bg-slate-200"></span>The System Protocol<span className="w-12 h-px bg-slate-200"></span>
+      <section id="protocol" className="protocol-section py-20 md:py-32 px-6 md:px-16 max-w-5xl mx-auto relative z-10 bg-transparent">
+        <h2 className="text-center font-data font-bold tracking-[0.2em] text-slate-400 text-xs md:text-sm uppercase mb-16 md:mb-24 flex items-center justify-center gap-4">
+          <span className="w-8 md:w-12 h-px bg-slate-200"></span>The System Protocol<span className="w-8 md:w-12 h-px bg-slate-200"></span>
         </h2>
-        <div className="space-y-24">
-          <div className="protocol-card bg-white/95 backdrop-blur-xl border border-slate-100 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgb(0,0,0,0.06)] relative">
-            <div className="font-data text-8xl text-slate-50 font-bold absolute top-12 left-12 -z-10 select-none">01</div>
-            <div className="max-w-xl ml-auto relative z-10"><h3 className="text-4xl font-heading font-bold mb-6 text-slate-900">Comprehensive Profiling</h3>
-            <p className="text-slate-500 text-lg leading-relaxed">Provide your credentials, certifications, desired pay range, and clinical preferences. We use this comprehensive data to build a highly tailored professional profile that acts as your key to the right opportunities.</p></div>
+        <div className="space-y-16 md:space-y-24">
+          <div className="protocol-card bg-white/95 backdrop-blur-xl border border-slate-100 p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgb(0,0,0,0.06)] relative">
+            <div className="font-data text-6xl md:text-8xl text-slate-50 font-bold absolute top-6 left-6 md:top-12 md:left-12 -z-10 select-none">01</div>
+            <div className="max-w-xl ml-auto relative z-10 mt-12 md:mt-0"><h3 className="text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6 text-slate-900">Comprehensive Profiling</h3>
+            <p className="text-slate-500 text-base md:text-lg leading-relaxed">Provide your credentials, certifications, desired pay range, and clinical preferences. We use this comprehensive data to build a highly tailored professional profile that acts as your key to the right opportunities.</p></div>
           </div>
-          <div className="protocol-card bg-slate-50/95 backdrop-blur-xl border border-slate-100 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgb(0,0,0,0.06)] relative">
-            <div className="font-data text-8xl text-white font-bold absolute top-12 left-12 -z-10 select-none drop-shadow-sm">02</div>
-            <div className="max-w-xl ml-auto relative z-10"><h3 className="text-4xl font-heading font-bold mb-6 text-sky-500">Tailored Matchmaking</h3>
-            <p className="text-slate-500 text-lg leading-relaxed">Forget automated algorithms. We personally review your profile and specific desires to hand-select locums gigs that genuinely align with your career goals, bypassing the noise to find your perfect fit.</p></div>
+          <div className="protocol-card bg-slate-50/95 backdrop-blur-xl border border-slate-100 p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgb(0,0,0,0.06)] relative">
+            <div className="font-data text-6xl md:text-8xl text-white font-bold absolute top-6 left-6 md:top-12 md:left-12 -z-10 select-none drop-shadow-sm">02</div>
+            <div className="max-w-xl ml-auto relative z-10 mt-12 md:mt-0"><h3 className="text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6 text-sky-500">Tailored Matchmaking</h3>
+            <p className="text-slate-500 text-base md:text-lg leading-relaxed">Forget automated algorithms. We personally review your profile and specific desires to hand-select locums gigs that genuinely align with your career goals, bypassing the noise to find your perfect fit.</p></div>
           </div>
-          <div className="protocol-card bg-white/95 backdrop-blur-xl border border-sky-100 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgba(14,165,233,0.08)] relative">
-            <div className="font-data text-8xl text-sky-50 font-bold absolute top-12 left-12 -z-10 select-none">03</div>
-            <div className="max-w-xl ml-auto relative z-10">
-              <h3 className="text-4xl font-heading font-bold mb-6 text-slate-900">Deploy & Practice</h3>
-              <p className="text-slate-500 text-lg leading-relaxed">Step seamlessly into the clinical space. We manage the licensing, travel logistics, and payroll silently in the background.</p>
+          <div className="protocol-card bg-white/95 backdrop-blur-xl border border-sky-100 p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgba(14,165,233,0.08)] relative">
+            <div className="font-data text-6xl md:text-8xl text-sky-50 font-bold absolute top-6 left-6 md:top-12 md:left-12 -z-10 select-none">03</div>
+            <div className="max-w-xl ml-auto relative z-10 mt-12 md:mt-0">
+              <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6 text-slate-900">Deploy & Practice</h3>
+              <p className="text-slate-500 text-base md:text-lg leading-relaxed">Step seamlessly into the clinical space. We manage the licensing, travel logistics, and payroll silently in the background.</p>
             </div>
           </div>
-          <div className="protocol-card bg-slate-50/95 backdrop-blur-xl border border-sky-200/50 p-16 rounded-[3rem] min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgba(14,165,233,0.06)] relative overflow-hidden">
-            <div className="font-data text-8xl text-white font-bold absolute top-12 left-12 -z-10 select-none drop-shadow-sm">04</div>
-            <div className="max-w-xl ml-auto relative z-10">
-              <h3 className="text-4xl font-heading font-bold mb-6 text-sky-500">Enjoy Referral Bonus</h3>
-              <p className="text-slate-500 text-lg leading-relaxed">
+          <div className="protocol-card bg-slate-50/95 backdrop-blur-xl border border-sky-200/50 p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] min-h-[40vh] md:min-h-[50vh] flex flex-col justify-center shadow-[0_20px_50px_rgba(14,165,233,0.06)] relative overflow-hidden">
+            <div className="font-data text-6xl md:text-8xl text-white font-bold absolute top-6 left-6 md:top-12 md:left-12 -z-10 select-none drop-shadow-sm">04</div>
+            <div className="max-w-xl ml-auto relative z-10 mt-12 md:mt-0">
+              <h3 className="text-3xl md:text-4xl font-heading font-bold mb-4 md:mb-6 text-sky-500">Enjoy Referral Bonus</h3>
+              <p className="text-slate-500 text-base md:text-lg leading-relaxed">
                 Turn your connections into extra income. When you refer your colleagues to us, you'll earn an ongoing bonus for every hour they practice. The more people you introduce, the more your passive income grows.
               </p>
             </div>
@@ -471,9 +471,9 @@ export default function QuantumCareApp() {
         </div>
       </section>
 
-      <section id="network" className="py-32 px-8 md:px-16 border-t border-slate-100 bg-white/60 backdrop-blur-lg relative z-10">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
-          <div className="bg-white p-12 md:p-16 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/40 min-h-[500px] flex flex-col justify-center">
+      <section id="network" className="py-20 md:py-32 px-6 md:px-16 border-t border-slate-100 bg-white/60 backdrop-blur-lg relative z-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20">
+          <div className="bg-white p-8 md:p-16 rounded-[2rem] md:rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/40 min-h-[400px] md:min-h-[500px] flex flex-col justify-center">
             {isFormSubmitted ? (
                <div className="text-center py-6 animate-in fade-in zoom-in duration-500">
                   <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-100 shadow-sm">
@@ -512,8 +512,8 @@ export default function QuantumCareApp() {
             )}
            </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-5xl md:text-6xl font-heading font-extrabold tracking-tight mb-6 text-slate-900">Accelerate your <br /><span className="font-drama italic text-sky-500 font-light">placement volume.</span></h2>
-            <p className="text-xl text-slate-500 mb-10 leading-relaxed">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-heading font-extrabold tracking-tight mb-4 md:mb-6 text-slate-900">Accelerate your <br /><span className="font-drama italic text-sky-500 font-light">placement volume.</span></h2>
+            <p className="text-lg md:text-xl text-slate-500 mb-8 md:mb-10 leading-relaxed">
               Are you a locums agency looking to fill critical roles? We act as a high-yield clinical funnel. Partner with Quantum Care Collective to instantly access a vetted network of premier physicians ready to staff your open positions.
             </p>
             <div className="space-y-5">
@@ -536,8 +536,8 @@ export default function QuantumCareApp() {
         </div>
       </section>
 
-      <footer className="bg-white pt-24 pb-12 px-8 md:px-16 border-t border-slate-200 relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-100">
+      <footer className="bg-white pt-16 md:pt-24 pb-8 md:pb-12 px-6 md:px-16 border-t border-slate-200 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-100 text-center md:text-left">
           <p className="text-slate-400 text-sm font-medium">© {new Date().getFullYear()} Quantum Care Collective Inc.</p>
           <button onClick={() => setShowAbout(true)} className="flex items-center gap-3 mt-4 md:mt-0 bg-slate-50 px-6 py-2.5 rounded-full border border-slate-200 hover:bg-slate-100 hover:border-slate-300 hover:shadow-sm transition-all group cursor-pointer hover:-translate-y-px">
             <span className="font-data font-bold text-[10.5px] text-slate-500 group-hover:text-sky-600 tracking-widest uppercase transition-colors">About Us</span>
@@ -548,26 +548,26 @@ export default function QuantumCareApp() {
       {showAbout && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowAbout(false)}></div>
-          <div className="relative w-full max-w-4xl bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden animate-in fade-in zoom-in">
-            <div className="p-10 md:p-14">
-              <button onClick={() => setShowAbout(false)} className="absolute top-8 right-8 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all text-xl font-bold">✕</button>
+          <div className="relative w-full max-w-4xl bg-white rounded-[2rem] md:rounded-[3rem] border border-slate-100 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in">
+            <div className="p-6 md:p-14 overflow-y-auto">
+              <button onClick={() => setShowAbout(false)} className="absolute top-4 right-4 md:top-8 md:right-8 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all text-xl font-bold z-10">✕</button>
               
-              <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-slate-900 mb-8 border-b border-slate-100 pb-8">About Us</h2>
+              <h2 className="text-3xl md:text-5xl font-heading font-extrabold text-slate-900 mb-6 md:mb-8 border-b border-slate-100 pb-4 md:pb-8">About Us</h2>
               
-              <p className="text-xl text-slate-500 leading-relaxed mb-12">
+              <p className="text-lg md:text-xl text-slate-500 leading-relaxed mb-8 md:mb-12">
                 Quantum Care Collective was founded on a singular vision: to strip away the bureaucratic friction that hampers modern medicine. We built this company in the hopes to make it a seamless experience for doctors to enjoy practicing medicine without being burdened by the relentless paperwork and administrative overhead that plagues healthcare today.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-sky-200 hover:shadow-md transition-all group">
-                  <h4 className="font-data text-xs text-sky-500 font-bold uppercase tracking-widest mb-2">Chief Operating Officer</h4>
-                  <h3 className="text-2xl font-heading font-bold text-slate-900 mb-4">Daria Vasichkina</h3>
-                  <a href="mailto:daria@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-sm block">daria@quantumcarecollective.org</a>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                <div className="p-6 md:p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-sky-200 hover:shadow-md transition-all group">
+                  <h4 className="font-data text-[10px] md:text-xs text-sky-500 font-bold uppercase tracking-widest mb-2">Chief Operating Officer</h4>
+                  <h3 className="text-xl md:text-2xl font-heading font-bold text-slate-900 mb-4">Daria Vasichkina</h3>
+                  <a href="mailto:daria@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-[10px] md:text-sm block break-all">daria@quantumcarecollective.org</a>
                 </div>
-                <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-sky-200 hover:shadow-md transition-all group">
-                  <h4 className="font-data text-xs text-sky-500 font-bold uppercase tracking-widest mb-2">Chief Executive Officer</h4>
-                  <h3 className="text-2xl font-heading font-bold text-slate-900 mb-4">Ludwig Koeneke</h3>
-                  <a href="mailto:ludwig@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-sm block">ludwig@quantumcarecollective.org</a>
+                <div className="p-6 md:p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-sky-200 hover:shadow-md transition-all group">
+                  <h4 className="font-data text-[10px] md:text-xs text-sky-500 font-bold uppercase tracking-widest mb-2">Chief Executive Officer</h4>
+                  <h3 className="text-xl md:text-2xl font-heading font-bold text-slate-900 mb-4">Ludwig Koeneke</h3>
+                  <a href="mailto:ludwig@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-[10px] md:text-sm block break-all">ludwig@quantumcarecollective.org</a>
                 </div>
               </div>
             </div>
