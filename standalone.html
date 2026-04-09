@@ -284,6 +284,7 @@ function QuantumCareApp() {
   // State for Navigation / Modals
   const [showScheduler, setShowScheduler] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
   
   // State for Form Fields
   const [name, setName] = useState('');
@@ -394,9 +395,15 @@ function QuantumCareApp() {
             Autonomy meets <br />
             <span className="font-drama italic text-5xl sm:text-6xl md:text-[8.5rem] font-light text-slate-400">Medicine.</span>
           </h1>
-          <a href="#network" className="hero-text mt-12 inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-full font-medium btn-magnetic group shadow-xl shadow-slate-900/10 pointer-events-auto">
-            Join the Network <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </a>
+          <div className="hero-text mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-6 pointer-events-auto">
+            <a href="#network" className="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-full font-medium btn-magnetic group shadow-xl shadow-slate-900/10">
+              Join the Network <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </a>
+            <button onClick={() => setShowVideoModal(true)} className="inline-flex items-center gap-3 text-slate-800 hover:text-sky-500 font-medium px-4 py-4 rounded-full transition-colors group bg-white/50 hover:bg-white backdrop-blur-sm border border-slate-200 shadow-sm">
+              <PlayCircle className="w-6 h-6 text-sky-500 group-hover:scale-110 transition-transform" />
+              Watch The Manifesto
+            </button>
+          </div>
         </div>
       </section>
 
@@ -485,6 +492,10 @@ function QuantumCareApp() {
              <p>
                Quantum Care Collective isn't just another agency. It's the operating system I built to strip away the noise so that you can show up, practice pure medicine, and get paid seamlessly.
              </p>
+             <div className="pt-4 md:pt-8 text-center text-base md:text-lg font-medium text-slate-800">
+               <span className="block font-heading font-bold text-xl md:text-2xl text-slate-900 mb-1 mt-6">Ludwig Koeneke-Hernandez MD</span>
+               <span className="font-data tracking-widest text-[10px] md:text-xs text-sky-500 uppercase font-bold">Co-Founder and CEO</span>
+             </div>
            </div>
          </div>
       </section>
@@ -622,6 +633,24 @@ function QuantumCareApp() {
                   <a href="mailto:ludwig@quantumcarecollective.org" className="text-slate-500 group-hover:text-sky-500 font-medium transition-colors font-data text-[10px] md:text-sm block break-all">ludwig@quantumcarecollective.org</a>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showVideoModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-in fade-in">
+          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md" onClick={() => setShowVideoModal(false)}></div>
+          <div className="relative w-full max-w-5xl aspect-video bg-black rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-700 shadow-2xl overflow-hidden animate-in zoom-in group">
+            <button onClick={() => setShowVideoModal(false)} className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all text-xl font-bold z-20">✕</button>
+            <video controls autoPlay className="w-full h-full object-cover z-10 relative opacity-0 hover:opacity-100 transition-opacity duration-700">
+               <source src="#" type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 pointer-events-none p-6 text-center z-0 bg-gradient-to-b from-slate-900 to-black">
+               <PlayCircle className="w-16 h-16 mb-4 text-sky-500 opacity-80" />
+               <p className="font-heading font-medium text-2xl text-white tracking-tight">Founder's Manifesto Video</p>
+               <p className="font-data text-xs mt-3 uppercase tracking-widest text-sky-500">Awaiting Final Cut</p>
+               <p className="text-slate-500 text-sm mt-4 max-w-md">Replace the `src` attribute of the video tag in the codebase once the final video is produced.</p>
             </div>
           </div>
         </div>

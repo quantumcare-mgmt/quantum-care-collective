@@ -433,6 +433,10 @@ export default function QuantumCareApp() {
              <p>
                Quantum Care Collective isn't just another agency. It's the operating system I built to strip away the noise so that you can show up, practice pure medicine, and get paid seamlessly.
              </p>
+             <div className="pt-4 md:pt-8 text-center text-base md:text-lg font-medium text-slate-800">
+               <span className="block font-heading font-bold text-xl md:text-2xl text-slate-900 mb-1 mt-6">Ludwig Koeneke-Hernandez MD</span>
+               <span className="font-data tracking-widest text-[10px] md:text-xs text-sky-500 uppercase font-bold">Co-Founder and CEO</span>
+             </div>
            </div>
          </div>
       </section>
