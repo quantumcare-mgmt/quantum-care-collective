@@ -406,15 +406,35 @@ export default function QuantumCareApp() {
         </div>
       </section>
 
-      <section className="philosophy-section relative py-48 px-8 md:px-16 overflow-hidden bg-white/40 backdrop-blur-sm">
+      <section className="philosophy-section relative py-28 md:py-48 px-6 md:px-16 overflow-hidden bg-white/40 backdrop-blur-sm">
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           <p className="philosophy-line text-lg md:text-xl text-slate-500 font-medium mb-8">
             Most agencies focus on bureaucratic friction and generic placements.
           </p>
-          <h2 className="philosophy-line text-5xl md:text-7xl font-heading font-extrabold tracking-tight text-slate-900">
+          <h2 className="philosophy-line text-4xl sm:text-5xl md:text-7xl font-heading font-extrabold tracking-tight text-slate-900">
             We focus on pure <br /><span className="font-drama italic font-light text-sky-500">clinical autonomy.</span>
           </h2>
         </div>
+      </section>
+
+      <section id="our-story" className="py-24 md:py-40 px-6 md:px-16 flex flex-col items-center relative z-10 bg-slate-50/50 border-y border-slate-100">
+         <div className="max-w-4xl mx-auto text-center">
+           <h2 className="font-data font-bold tracking-[0.2em] text-sky-500 text-xs md:text-sm uppercase mb-6 md:mb-8 flex items-center justify-center gap-4">
+             <span className="w-8 md:w-16 h-px bg-sky-200"></span>Our Foundation<span className="w-8 md:w-16 h-px bg-sky-200"></span>
+           </h2>
+           <h3 className="text-3xl md:text-5xl font-heading font-extrabold text-slate-900 mb-8 md:mb-12 tracking-tight">Built by a physician, for physicians.</h3>
+           <div className="space-y-6 md:space-y-8 text-lg md:text-xl text-slate-500 leading-relaxed max-w-3xl mx-auto">
+             <p>
+               As an emergency medicine physician trying to balance multiple concurrent locums contracts, the friction became inescapable. I constantly found myself buried under credentialing paperwork, fragmented schedules, dropped communications, and opaque pay structures. 
+             </p>
+             <p>
+               The administrative burden of simply trying to work became so heavy that it started to overshadow the actual practice of medicine itself. I knew there had to be a better way. I made it my mission to build the system I desperately needed—not just for myself, but to help other locum tenens physicians reclaim their time.
+             </p>
+             <p>
+               Quantum Care Collective isn't just another agency. It's the operating system I built to strip away the noise so that you can show up, practice pure medicine, and get paid seamlessly.
+             </p>
+           </div>
+         </div>
       </section>
 
       <section id="protocol" className="protocol-section py-32 px-8 md:px-16 max-w-5xl mx-auto relative z-10 bg-transparent">
