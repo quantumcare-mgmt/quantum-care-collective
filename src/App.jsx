@@ -566,8 +566,8 @@ export default function QuantumCareApp() {
             )}
            </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-heading font-extrabold tracking-tight mb-4 md:mb-6 text-slate-900">Accelerate your <br /><span className="font-drama italic text-sky-500 font-light">placement volume.</span></h2>
-            <p className="text-lg md:text-xl text-slate-500 mb-8 md:mb-10 leading-relaxed">
+            <h2 className="text-4xl font-heading font-bold mb-3 text-slate-900">Partner With Us</h2>
+            <p className="text-slate-500 mb-10 text-lg">
               Are you a locums agency looking to fill critical roles? We act as a high-yield clinical funnel. Partner with Quantum Care Collective to instantly access a vetted network of premier physicians ready to staff your open positions.
             </p>
             <div className="mt-4">
