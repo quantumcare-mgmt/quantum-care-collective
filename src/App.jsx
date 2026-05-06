@@ -542,7 +542,7 @@ export default function QuantumCareApp() {
             ) : (
                 <>
                     <h2 className="text-4xl font-heading font-bold mb-3 text-slate-900">Join the Network</h2>
-                    <p className="text-slate-500 mb-10 text-lg">We'd love to connect with you. Leave your details below, and we'll be in touch.</p>
+                    <p className="text-slate-500 mb-10 text-lg">Are you a physician looking to reclaim your clinical autonomy? We'd love to connect with you. Leave your details below, and our team will be in touch to discuss your next career move.</p>
                     <form onSubmit={handleJoinSubmit} className="space-y-6">
                     <div className="space-y-3">
                         <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Details</label>
