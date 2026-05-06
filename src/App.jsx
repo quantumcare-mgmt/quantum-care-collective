@@ -325,7 +325,11 @@ export default function QuantumCareApp() {
           <a href="#protocol" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Protocol</a>
           <a href="#network" className="hover:text-sky-500 transition-colors hover:-translate-y-px block">Network</a>
         </div>
-        <a href="#network" className="btn-magnetic bg-sky-500 text-white px-5 md:px-6 py-2 md:py-2.5 rounded-full font-medium text-xs md:text-sm tracking-wide">Join Now</a>
+        <div className="flex items-center gap-4 md:gap-6">
+          <a href="https://portal.quantumcarecollective.org" className="hidden md:block text-slate-600 hover:text-sky-500 font-medium text-xs md:text-sm tracking-wide transition-colors">Log In</a>
+          <a href="https://portal.quantumcarecollective.org" className="md:hidden text-slate-600 hover:text-sky-500 font-medium text-xs tracking-wide transition-colors">Log In</a>
+          <a href="#network" className="btn-magnetic bg-sky-500 text-white px-5 md:px-6 py-2 md:py-2.5 rounded-full font-medium text-xs md:text-sm tracking-wide shadow-md shadow-sky-500/20">Join Now</a>
+        </div>
       </nav>
 
       <section className="relative h-[100dvh] flex items-end pb-24 md:pb-32 px-6 md:px-16 overflow-hidden">
