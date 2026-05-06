@@ -7,9 +7,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 // =========================================================================
 // BACKEND CONFIGURATION
-// Once you deploy the Google Apps Script, paste the Web App URL below:
+// Webhook endpoints connecting to the CRM database
 // =========================================================================
-const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbws0RdIXPkt18QVJ-Ns_tWSsmhjOdDQq7pViXIMAx_r2AVWmZOIqr1IUtiw0l0Hx9Kfow/exec"; 
+const CRM_WEBHOOK_URL = "https://portal.quantumcarecollective.org/api/webhooks/leads"; 
+const CRM_AGENCY_WEBHOOK_URL = "https://portal.quantumcarecollective.org/api/webhooks/agencies";
 
 // --- INTERACTIVE SENSOR GRID ---
 const InteractiveSensorGrid = () => {
@@ -238,9 +239,19 @@ export default function QuantumCareApp() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   
-  // State for Form Submission
+  // State for Lead Form Submission
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // State for Agency Form Fields
+  const [agencyName, setAgencyName] = useState('');
+  const [agencyContact, setAgencyContact] = useState('');
+  const [agencyEmail, setAgencyEmail] = useState('');
+  const [agencyPhone, setAgencyPhone] = useState('');
+  
+  // State for Agency Form Submission
+  const [isAgencySubmitted, setIsAgencySubmitted] = useState(false);
+  const [isAgencySubmitting, setIsAgencySubmitting] = useState(false);
 
   useEffect(() => {
     if (showScheduler) return; // Disable main page scroll tracking if we're on the scheduler
@@ -293,26 +304,61 @@ export default function QuantumCareApp() {
     setPhone(formatted);
   };
 
+  const handleAgencyPhoneChange = (e) => {
+    let input = e.target.value.replace(/\D/g, '');
+    if (input.length > 10) input = input.substring(0, 10);
+    
+    let formatted = input;
+    if (input.length > 6) {
+      formatted = `(${input.slice(0, 3)}) ${input.slice(3, 6)}-${input.slice(6)}`;
+    } else if (input.length > 3) {
+      formatted = `(${input.slice(0, 3)}) ${input.slice(3)}`;
+    } else if (input.length > 0) {
+      formatted = `(${input}`;
+    }
+    
+    setAgencyPhone(formatted);
+  };
+
   const handleJoinSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    if (GOOGLE_WEB_APP_URL) {
-      try {
-        await fetch(GOOGLE_WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ type: 'JOIN_NETWORK', name, email, phone })
-        });
-      } catch(e) { console.error('Form fetch error:', e); }
-    }
+    try {
+      await fetch(CRM_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone })
+      });
+    } catch(e) { console.error('Form fetch error:', e); }
     
     setIsSubmitting(false);
     setIsFormSubmitted(true);
   };
 
+  const handleAgencySubmit = async (e) => {
+    e.preventDefault();
+    setIsAgencySubmitting(true);
+    
+    try {
+      await fetch(CRM_AGENCY_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          agencyName, 
+          contactName: agencyContact, 
+          email: agencyEmail, 
+          phone: agencyPhone 
+        })
+      });
+    } catch(e) { console.error('Agency Form fetch error:', e); }
+    
+    setIsAgencySubmitting(false);
+    setIsAgencySubmitted(true);
+  };
+
   if (showScheduler) {
-    return <SchedulingPage onBack={() => setShowScheduler(false)} userData={{name, email, phone}} scriptUrl={GOOGLE_WEB_APP_URL} />;
+    return <SchedulingPage onBack={() => setShowScheduler(false)} userData={{name, email, phone}} scriptUrl={null} />;
   }
 
   return (
@@ -524,21 +570,43 @@ export default function QuantumCareApp() {
             <p className="text-lg md:text-xl text-slate-500 mb-8 md:mb-10 leading-relaxed">
               Are you a locums agency looking to fill critical roles? We act as a high-yield clinical funnel. Partner with Quantum Care Collective to instantly access a vetted network of premier physicians ready to staff your open positions.
             </p>
-            <div className="space-y-5">
-              <div className="flex items-center gap-6 border border-slate-100 p-5 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 shrink-0"><Activity size={24} /></div>
-                <div>
-                  <h4 className="font-heading font-bold text-lg text-slate-900">Rapid Deployment</h4>
-                  <p className="text-sm text-slate-500 mt-1">Accelerate your placement lifecycle with our active physician roster.</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-6 border border-slate-100 p-5 rounded-3xl bg-white shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-500 shrink-0"><FileText size={24} /></div>
-                <div>
-                  <h4 className="font-heading font-bold text-lg text-slate-900">Pre-Vetted Talent</h4>
-                  <p className="text-sm text-slate-500 mt-1">Access credentialed professionals ready to fulfill your contracts.</p>
-                </div>
-              </div>
+            <div className="mt-4">
+              {isAgencySubmitted ? (
+                 <div className="text-center py-8 animate-in fade-in zoom-in duration-500 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-100 shadow-sm">
+                      <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h3 className="text-3xl font-heading font-extrabold mb-3 text-slate-900 tracking-tight">Application Received.</h3>
+                    <p className="text-slate-500 text-base">Our partnership team will contact you shortly.</p>
+                 </div>
+              ) : (
+                  <form onSubmit={handleAgencySubmit} className="space-y-5 bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-slate-200 group-focus-within:bg-sky-500 transition-colors duration-500"></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          <div className="space-y-2">
+                              <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agency Name</label>
+                              <input type="text" value={agencyName} onChange={e=>setAgencyName(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium text-sm" placeholder="e.g. Weatherby Healthcare" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Point of Contact</label>
+                              <input type="text" value={agencyContact} onChange={e=>setAgencyContact(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium text-sm" placeholder="Full Name" />
+                          </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          <div className="space-y-2">
+                              <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Work Email</label>
+                              <input type="email" value={agencyEmail} onChange={e=>setAgencyEmail(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium text-sm" placeholder="name@agency.com" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="font-data text-[10px] font-bold text-slate-400 uppercase tracking-widest">Direct Phone</label>
+                              <input type="tel" value={agencyPhone} onChange={handleAgencyPhoneChange} required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all font-medium text-sm" placeholder="(555) 000-0000" />
+                          </div>
+                      </div>
+                      <button type="submit" disabled={isAgencySubmitting} className="w-full bg-slate-900 text-white font-bold tracking-wide rounded-xl py-3.5 mt-4 transition-all hover:bg-slate-800 shadow-md shadow-slate-900/10 disabled:opacity-50 disabled:hover:scale-100 flex justify-center text-sm">
+                          {isAgencySubmitting ? <span className="animate-pulse">Submitting...</span> : 'Submit Partnership Application'}
+                      </button>
+                  </form>
+              )}
             </div>
           </div>
         </div>
